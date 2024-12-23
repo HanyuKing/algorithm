@@ -11,6 +11,51 @@ import java.util.*;
  * @Version 1.0
  **/
 public class LC extends Base {
+
+    @Test
+    public void testP12() {
+        print(intToRoman(58));
+        print(intToRoman(1994));
+        print(intToRoman(3749));
+    }
+
+    public String intToRoman(int num) {
+        TreeMap<Integer, String> sortedMap = new TreeMap<>((o1, o2) -> o2 - o1);
+        sortedMap.put(1000, "M");
+        sortedMap.put(500, "D");
+        sortedMap.put(100, "C");
+        sortedMap.put(50, "L");
+        sortedMap.put(10, "X");
+        sortedMap.put(5, "V");
+        sortedMap.put(1, "I");
+        sortedMap.put(4, "IV");
+        sortedMap.put(9, "IX");
+        sortedMap.put(40, "XL");
+        sortedMap.put(90, "XC");
+        sortedMap.put(400, "CD");
+        sortedMap.put(900, "CM");
+
+        sortedMap.put(3, "III");
+        sortedMap.put(30, "XXX");
+        sortedMap.put(300, "CCC");
+        sortedMap.put(3000, "MMM");
+
+        StringBuilder ans = new StringBuilder();
+
+        for (Map.Entry<Integer, String> entry : sortedMap.entrySet()) {
+            int curr = entry.getKey();
+            while (num - curr >= 0) {
+                num = num - curr;
+                ans.append(entry.getValue());
+            }
+            if (num == 0) {
+                break;
+            }
+        }
+
+        return ans.toString();
+    }
+
     @Test
     public void testP3188() {
         System.out.println(minAnagramLength("aabbabab"));
@@ -109,5 +154,120 @@ public class LC extends Base {
             }
         }
         return result;
+    }
+
+    @Test
+    public void testP8() {
+//        print(myAtoi("42"));
+//        print(myAtoi("-42"));
+//        print(myAtoi("    -42"));
+//        print(myAtoi("    -042"));
+//
+//        print(myAtoi("2147483647"));
+//        print(myAtoi("-2147483648"));
+//        print(myAtoi("-21474836481"));
+//        print(myAtoi("-91283472332")); // -2147483648
+        print(myAtoi("-6147483648")); // -2147483648
+
+//        print(myAtoi("0-1"));
+//        print(myAtoi("-1337c0d3"));
+//        print(myAtoi("1337c0d3"));
+//
+//        print(myAtoi("words and 987"));
+
+//        print(myAtoi("2147483646"));
+
+
+    }
+
+    public int myAtoi(String s) {
+        if (s.length() == 0) {
+            return 0;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (char c : s.toCharArray()) {
+            if (c == ' ') {
+                if (sb.length() == 0) {
+                    continue;
+                } else {
+                    break;
+                }
+            }
+            if ((c == '-' || c == '+') && sb.length() == 0
+                    || (c >= '0' && c <= '9')) {
+                sb.append(c);
+            } else {
+                break;
+            }
+        }
+
+        if (sb.length() == 0) {
+            return 0;
+        }
+
+        int result = 0;
+        char[] numArray = sb.toString().toCharArray();
+        int i = 0;
+        if (numArray[0] == '-' || numArray[0] == '+') {
+            i++;
+        }
+
+        int boundary = Integer.MAX_VALUE / 10;
+        for ( ; i < numArray.length; i++) {
+            int num = (numArray[i] - '0');
+            if (result > boundary || result == boundary && num > 7) {
+                return numArray[0] == '-' ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+            }
+            result = result * 10 + num;
+        }
+
+        return numArray[0] == '-' ? -result : result;
+    }
+
+    public int myAtoi2(String s) {
+        if (s.length() == 0) {
+            return 0;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (char c : s.toCharArray()) {
+            if (c == ' ') {
+                if (sb.length() == 0) {
+                    continue;
+                } else {
+                    break;
+                }
+            }
+            if ((c == '-' || c == '+') && sb.length() == 0
+                    || (c >= '0' && c <= '9')) {
+                sb.append(c);
+            } else {
+                break;
+            }
+        }
+
+        if (sb.length() == 0) {
+            return 0;
+        }
+
+        int result = 0;
+        char[] numArray = sb.toString().toCharArray();
+        int i = 0;
+        if (numArray[0] == '-' || numArray[0] == '+') {
+            i++;
+        }
+
+        for ( ; i < numArray.length; i++) {
+            int num = (numArray[i] - '0');
+            if (result * 10 / 10 != result) {
+                return numArray[0] == '-' ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+            }
+            if (result * 10 <= Integer.MAX_VALUE - num) {
+                result = result * 10 + num;
+            } else {
+                return numArray[0] == '-' ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+            }
+        }
+
+        return numArray[0] == '-' ? -result : result;
     }
 }
