@@ -270,4 +270,316 @@ public class LC extends Base {
 
         return numArray[0] == '-' ? -result : result;
     }
+
+    @Test
+    public void testP3() {
+        print(lengthOfLongestSubstring("abcabcbb")); // 3
+        print(lengthOfLongestSubstring("bbbbb")); // 1
+        print(lengthOfLongestSubstring("pwwkew")); // 3
+    }
+
+    public int lengthOfLongestSubstring(String s) {
+        int left = 0;
+        int right = 0;
+        int n = s.length();
+        Set<Character> set = new HashSet<>();
+        int max = 0;
+        while (right < n) {
+            char curr = s.charAt(right);
+            if (!set.contains(curr)) {
+                set.add(curr);
+                right++;
+                max = Math.max(set.size(), max);
+            } else {
+                char leftChar = s.charAt(left++);
+                set.remove(leftChar);
+            }
+        }
+        return max;
+    }
+
+    @Test
+    public void testP5() {
+        print(longestPalindrome("babad")); // bab (i + 1, j - 1)
+        print(longestPalindrome("cbbd")); // bb
+        print(longestPalindrome("aacabdkacaa")); // cbbc
+    }
+
+    public String longestPalindrome(String s) {
+        int n = s.length();
+        int[][] dp = new int[n][n];
+        int l = 0;
+        int r = 0;
+        int max = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            dp[i][i] = 1;
+            for (int j = i + 1; j < n; j++) {
+                if (s.charAt(i) == s.charAt(j) && (j == i + 1 || dp[i + 1][j - 1] > 0)) {
+                    int currMax = (j - i + 1);
+                    if (currMax > max) {
+                        l = i;
+                        r = j;
+                        max = currMax;
+                    }
+                    dp[i][j] = dp[i + 1][j - 1] + 2;
+                }
+            }
+        }
+        return s.substring(l, r + 1);
+    }
+
+    @Test
+    public void testP6() {
+        print(convert("PAYPALISHIRING", 3));
+        print(convert("PAYPALISHIRING", 4));
+        print(convert("ABCDE", 4));
+    }
+
+    public String convert(String s, int numRows) {
+        if (numRows == 1) {
+            return s;
+        }
+        int n = s.length();
+        int numCols =  ((int) Math.ceil((double) n / (numRows + numRows - 2))) * (numRows - 1) + 1;
+        char[][] chars = new char[numRows][numCols];
+        for (int i = 0; i < numRows; i++) {
+            Arrays.fill(chars[i], ' ');
+        }
+        int row = 0;
+        int col = 0;
+        boolean down = true;
+        for (char c : s.toCharArray()) {
+            if (down) {
+                chars[row][col] = c;
+                row++;
+                if (row == numRows) {
+                    down = false;
+                    col = col + 1;
+                    row = numRows - 2;
+                }
+            } else {
+                chars[row][col] = c;
+                col++;
+                row--;
+                if (row == -1) {
+                    down = true;
+                    row = 1;
+                    col--;
+                }
+            }
+
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < numRows; i++) {
+            for (int j = 0; j < numCols; j++) {
+                if (chars[i][j] != ' ') {
+                    sb.append(chars[i][j]);
+                }
+            }
+        }
+        return sb.toString();
+    }
+
+    @Test
+    public void testP11() {
+        print(maxArea2(new int[] {1,8,6,2,5,4,8,3,7})); // 49
+    }
+
+    public int maxArea2(int[] height) {
+        // s = (j - i) * (min(h[i], h[j]))
+        int l = 0;
+        int r = height.length - 1;
+        int max = 0;
+        while (l < r) {
+            int min = Math.min(height[l], height[r]);
+            max = Math.max(max, (r - l) * min);
+            while (l < r && height[l] <= min) {
+                l++;
+            }
+            while (l < r && height[r] <= min) {
+                r--;
+            }
+        }
+        return max;
+    }
+
+    public int maxArea(int[] height) {
+        // s = (j - i) * (min(h[i], h[j]))
+        int l = 0;
+        int r = height.length - 1;
+        int max = 0;
+        while (l < r) {
+            int min = Math.min(height[l], height[r]);
+            max = Math.max(max, (r - l) * min);
+            if (min == height[l]) {
+                l++;
+            } else {
+                r--;
+            }
+        }
+        return max;
+    }
+
+    @Test
+    public void testP13() {
+        print(romanToInt("MCMXCIV")); // 1994
+    }
+
+    public int romanToInt(String s) {
+        Map<Character, Integer> map = new HashMap<>();
+        map.put('I', 1);
+        map.put('V', 5);
+        map.put('X', 10);
+        map.put('L', 50);
+        map.put('C', 100);
+        map.put('D', 500);
+        map.put('M', 1000);
+        int ans = 0;
+        for (int i = 0; i < s.length(); i++) {
+            int curr = map.get(s.charAt(i));
+            if (i < s.length() - 1 && curr < map.get(s.charAt(i + 1))) {
+                ans = ans + map.get(s.charAt(i + 1)) - curr;
+                i++;
+            } else {
+                ans = ans + curr;
+            }
+        }
+        return ans;
+    }
+
+    @Test
+    public void testP17() {
+        String digits = ""; // ["ad","ae","af","bd","be","bf","cd","ce","cf"]
+        print(letterCombinations(digits));
+    }
+
+    public List<String> letterCombinations2(String digits) {
+        Map<Integer, char[]> map = new HashMap<>();
+        map.put(2, new char[]{'a', 'b', 'c'});
+        map.put(3, new char[]{'d', 'e', 'f'});
+        map.put(4, new char[]{'g', 'h', 'i'});
+        map.put(5, new char[]{'j', 'k', 'l'});
+        map.put(6, new char[]{'m', 'n', 'o'});
+        map.put(7, new char[]{'p', 'q', 'r', 's'});
+        map.put(8, new char[]{'t', 'u', 'v'});
+        map.put(9, new char[]{'w', 'x', 'y', 'z'});
+        List<String> result = new ArrayList<>();
+
+        for (char digitC : digits.toCharArray()) {
+            char[] chars = map.get(digitC - '0');
+            List<String> newResult = new ArrayList<>();
+            for (String s : result) {
+                for (char c : chars) {
+                    newResult.add(s + c);
+                }
+            }
+            if (result.isEmpty()) {
+                for (char c : chars) {
+                    result.add(c + "");
+                }
+            } else {
+                result = newResult;
+            }
+        }
+
+        return result;
+    }
+    public List<String> letterCombinations(String digits) {
+        Map<Character, char[]> map = new HashMap<>();
+        map.put('2', new char[]{'a', 'b', 'c'});
+        map.put('3', new char[]{'d', 'e', 'f'});
+        map.put('4', new char[]{'g', 'h', 'i'});
+        map.put('5', new char[]{'j', 'k', 'l'});
+        map.put('6', new char[]{'m', 'n', 'o'});
+        map.put('7', new char[]{'p', 'q', 'r', 's'});
+        map.put('8', new char[]{'t', 'u', 'v'});
+        map.put('9', new char[]{'w', 'x', 'y', 'z'});
+        List<String> result = new ArrayList<>();
+
+        dfsLetterCombinations(map, result, new StringBuilder(), digits, 0, digits.length());
+
+        return result;
+    }
+
+    private void dfsLetterCombinations(Map<Character, char[]> map,
+                                       List<String> result,
+                                       StringBuilder sb,
+                                       String digits,
+                                       int index,
+                                       int length) {
+        if (index == length) {
+            if (sb.length() > 0) {
+                result.add(sb.toString());
+            }
+            return;
+        }
+        for (char c : map.get(digits.charAt(index))) {
+            sb.append(c);
+            dfsLetterCombinations(map, result, sb, digits, index + 1, length);
+            sb.deleteCharAt(sb.length() - 1);
+        }
+    }
+
+    @Test
+    public void testP19() {
+        ListNode n1 = new ListNode(1);
+        ListNode n2 = new ListNode(2);
+        ListNode n3 = new ListNode(3);
+        ListNode n4 = new ListNode(4);
+        ListNode n5 = new ListNode(5);
+        n1.next = n2;
+        n2.next = n3;
+        n3.next = n4;
+        n4.next = n5;
+        print(removeNthFromEnd(n1, 4));
+    }
+
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        ListNode p1 = head;
+        ListNode p2 = head;
+        while (n > 0 && p2 != null) {
+            p2 = p2.next;
+            n--;
+        }
+        if (p2 == null) {
+            head = head.next;
+            return head;
+        }
+        // 1->2->3->4
+        while (p2.next != null) {
+            p1 = p1.next;
+            p2 = p2.next;
+        }
+        p1.next = p1.next.next;
+        return head;
+    }
+
+    @Test
+    public void testP22() {
+        print(generateParenthesis(4));
+    }
+    public List<String> generateParenthesis(int n) {
+        List<String> result = new ArrayList<>();
+        dfsGenerateParenthesis(result, new StringBuilder(), 0, 0, n);
+        return result;
+    }
+
+    private void dfsGenerateParenthesis(List<String> result, StringBuilder sb, int lc, int rc, int n) {
+        if (sb.length() == n * 2) {
+            result.add(sb.toString());
+            return;
+        }
+        if (lc < n) {
+            sb.append('(');
+            dfsGenerateParenthesis(result, sb, lc + 1, rc, n);
+            sb.deleteCharAt(sb.length() - 1);
+        }
+        if (rc < n && rc < lc) {
+            sb.append(')');
+            dfsGenerateParenthesis(result, sb, lc, rc + 1, n);
+            sb.deleteCharAt(sb.length() - 1);
+        }
+    }
+
+
 }
