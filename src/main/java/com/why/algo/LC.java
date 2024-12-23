@@ -3,6 +3,8 @@ package com.why.algo;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * @Author Hanyu.Wang
@@ -581,5 +583,132 @@ public class LC extends Base {
         }
     }
 
+    @Test
+    public void testP31() {
+        int[] nums = new int[] {4,2,0,2,3,2,0}; // 4,2,0,3,0,2,2
+        nextPermutation(nums);
+        print(nums);
 
+        nums = new int[] {3, 2, 1}; // 123
+        nextPermutation(nums);
+        print(nums);
+
+        nums = new int[] {1, 1, 5}; // 151
+        nextPermutation(nums);
+        print(nums);
+
+        nums = new int[] {1, 3, 2}; // 213
+        nextPermutation(nums);
+        print(nums);
+    }
+
+    public void nextPermutation(int[] nums) {
+        int index = -1;
+        for (int i = nums.length - 1; i > 0; i--) {
+            if (nums[i] > nums[i - 1]) {
+                index = i - 1;
+                break;
+            }
+        }
+        if (index == -1) {
+            // Arrays.sort(nums, 0, nums.length);
+            reverse(nums, 0);
+            return;
+        }
+        for (int i = nums.length - 1; i > index; i--) {
+            if (nums[i] > nums[index]) {
+                int temp = nums[i];
+                nums[i] = nums[index];
+                nums[index] = temp;
+                break;
+            }
+        }
+
+        // Arrays.sort(nums, index + 1, nums.length);
+        reverse(nums, index + 1);
+    }
+
+    private void reverse(int[] nums, int index) {
+        int end = nums.length - 1;
+        while (index < end) {
+            int temp = nums[index];
+            nums[index] = nums[end];
+            nums[end] = temp;
+            index++;
+            end--;
+        }
+    }
+
+    @Test
+    public void testP33() {
+        int[] nums = new int[] {4,5,6,7,0,1,2};
+        int target = 0;
+        print(search(nums, target)); // 4
+    }
+    public int search(int[] nums, int target) {
+        int low = 0;
+        int high = nums.length - 1;
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            int midValue = nums[mid];
+            if (midValue == target) {
+                return mid;
+            } else if (nums[low] <= midValue) {
+                if (nums[low] <= target && target < midValue) {
+                    high = mid - 1;
+                } else {
+                    low = mid + 1;
+                }
+            } else {
+                if (midValue < target && target <= nums[high]) {
+                    low = mid + 1;
+                } else {
+                    high = mid - 1;
+                }
+            }
+        }
+        return -1;
+    }
+
+    @Test
+    public void testP34() {
+        int[] nums = new int[]  {5,7,7,8,8,10};
+        int target = 8;
+        print(searchRange(nums, target));
+
+        nums = new int[] {5,7,7,8,8,10};
+        target = 6;
+        print(searchRange(nums, target));
+    }
+
+    public int[] searchRange(int[] nums, int target) {
+        return new int[] {
+                searchRange(nums, target, true),
+                searchRange(nums, target, false)
+        };
+    }
+
+    public int searchRange(int[] nums, int target, boolean isLeft) {
+        int low = 0;
+        int high = nums.length - 1;
+        int index = -1;
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            int midValue = nums[mid];
+
+            if (target == midValue) {
+                index = mid;
+                if (isLeft) {
+                    high = mid - 1;
+                } else {
+                    low = mid + 1;
+                }
+            } else if (target < midValue) {
+                high = mid - 1;
+            } else {
+                low = mid + 1;
+            }
+        }
+        return index;
+    }
 }
