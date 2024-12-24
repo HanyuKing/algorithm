@@ -5,6 +5,7 @@ import org.junit.Test;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @Author Hanyu.Wang
@@ -710,5 +711,348 @@ public class LC extends Base {
             }
         }
         return index;
+    }
+
+    @Test
+    public void testP35() {
+        int[] nums = new int[] {1,3,5,6};
+        int target = 5;
+        print(searchInsert(nums, target));
+
+        nums = new int[] {1,3,5,6};
+        target = 2;
+        print(searchInsert(nums, target));
+    }
+
+    public int searchInsert(int[] nums, int target) {
+        int low = 0;
+        int high = nums.length - 1;
+        int insertIndex = 0;
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            int midVal = nums[mid];
+            if (target == midVal) {
+                return mid;
+            } else if (target < midVal) {
+                high = mid - 1;
+            } else {
+                low = mid + 1;
+            }
+        }
+        return low;
+    }
+
+    @Test
+    public void testP36() {
+        char[][] board = new char[][] {
+                {'5','3','.','.','7','.','.','.','.'},
+                {'6','.','.','1','9','5','.','.','.'},
+                {'.','9','8','.','.','.','.','6','.'},
+                {'8','.','.','.','6','.','.','.','3'},
+                {'4','.','.','8','.','3','.','.','1'},
+                {'7','.','.','.','2','.','.','.','6'},
+                {'.','6','.','.','.','.','2','8','.'},
+                {'.','.','.','4','1','9','.','.','5'},
+                {'.','.','.','.','8','.','.','7','9'}
+        };
+        print(isValidSudoku(board));
+
+        board[0][0] = '8';
+        print(isValidSudoku(board));
+    }
+
+    public boolean isValidSudoku(char[][] board) {
+        for (int i = 0; i < 9; i++) {
+            Set<Character> set = new HashSet<>();
+            for (int j = 0; j < 9; j++) {
+                if (board[i][j] == '.') {
+                    continue;
+                }
+                if (!set.contains(board[i][j])) {
+                    set.add(board[i][j]);
+                } else {
+                    return false;
+                }
+            }
+        }
+        for (int i = 0; i < 9; i++) {
+            Set<Character> set = new HashSet<>();
+            for (int j = 0; j < 9; j++) {
+                if (board[j][i] == '.') {
+                    continue;
+                }
+                if (!set.contains(board[j][i])) {
+                    set.add(board[j][i]);
+                } else {
+                    return false;
+                }
+            }
+        }
+        for (int i = 0; i < 9; i += 3) {
+            for (int j = 0; j < 9; j += 3) {
+                Set<Character> set = new HashSet<>();
+                for (int ii = i; ii < i + 3; ii++) {
+                    for (int jj = j; jj < j + 3; jj++) {
+                        if (board[ii][jj] == '.') {
+                            continue;
+                        }
+                        if (!set.contains(board[ii][jj])) {
+                            set.add(board[ii][jj]);
+                        } else {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    @Test
+    public void testP38() {
+        print(countAndSay(1));
+        print(countAndSay(2));
+        print(countAndSay(3));
+        print(countAndSay(4));
+    }
+
+    public String countAndSay2(int n) {
+        String s = "1";
+        for (int i = 2; i <= n; i++) {
+            s = rle(s.toCharArray());
+        }
+        return s;
+    }
+
+    public String countAndSay(int n) {
+        if (n == 1) {
+            return "1";
+        }
+        return rle(countAndSay(n - 1).toCharArray());
+    }
+    private String rle(char[] num) {
+        char pre = '-';
+        int count = 0;
+        StringBuilder newS = new StringBuilder();
+        for (char c : num) {
+            if (pre == '-') {
+                pre = c;
+                count = 1;
+            } else {
+                if (c == pre) {
+                    count++;
+                } else {
+                    newS.append(count).append(pre);
+                    count = 1;
+                    pre = c;
+                }
+            }
+        }
+        newS.append(count).append(pre);
+        return newS.toString();
+    }
+
+    @Test
+    public void testP39() {
+        int[] candidates = new int[] {2,3,6,7};
+        int target = 7;
+        print(combinationSum(candidates, target));
+    }
+
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        List<List<Integer>> result = new ArrayList<>();
+        Arrays.sort(candidates);
+        doCombinationSum(candidates, result, 0, new ArrayList<>(), target);
+        return result;
+    }
+
+    public void doCombinationSum(int[] candidates,
+                                 List<List<Integer>> result,
+                                 int index,
+                                 List<Integer> selected,
+                                 int target) {
+        if (target < 0) {
+            return;
+        }
+
+        if (target == 0) {
+            result.add(new ArrayList<>(selected));
+            return;
+        }
+
+        for (int i = index; i < candidates.length && target >= candidates[i]; i++) {
+            selected.add(candidates[i]);
+            doCombinationSum(candidates, result, i, selected, target - candidates[i]);
+            selected.remove(selected.size() - 1);
+        }
+    }
+
+    @Test
+    public void testP40() {
+        int[] candidates = new int[] {10,1,2,7,6,1,5}; // 1,1,2,5,6,7,10
+        int target = 8;
+        print(combinationSum2(candidates, target));
+
+    }
+
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        List<List<Integer>> result = new ArrayList<>();
+        Arrays.sort(candidates);
+        doCombinationSum2(candidates, result, 0, new ArrayList<>(), target);
+        return result;
+    }
+
+    public void doCombinationSum2(int[] candidates,
+                                 List<List<Integer>> result,
+                                 int index,
+                                 List<Integer> selected,
+                                 int target) {
+        if (target < 0) {
+            return;
+        }
+
+        if (target == 0) {
+            result.add(new ArrayList<>(selected));
+            return;
+        }
+
+        for (int i = index; i < candidates.length; i++) {
+            if (i > index && candidates[i - 1] == candidates[i]) {
+                continue;
+            }
+            selected.add(candidates[i]);
+            doCombinationSum2(candidates, result, i + 1, selected, target - candidates[i]);
+            selected.remove(selected.size() - 1);
+        }
+    }
+
+    @Test
+    public void testP42() {
+        int[] height = new int[] {0,1,0,2,1,0,1,3,2,1,2,1};
+        print(trap2(height));
+    }
+
+    public int trap2(int[] height) {
+        int left = 0;
+        int leftMax = 0;
+        int right = height.length - 1;
+        int rightMax = 0;
+        int result = 0;
+        while (left < right) {
+            if (height[left] < height[right]) {
+                if (height[left] < leftMax) {
+                    result += leftMax - height[left];
+                }
+
+                leftMax = Math.max(leftMax, height[left]);
+                left++;
+            } else {
+                if (height[right] < rightMax) {
+                    result += rightMax - height[right];
+                }
+
+                rightMax = Math.max(rightMax, height[right]);
+                right--;
+            }
+        }
+        return result;
+    }
+
+    public int trap(int[] height) {
+        int n = height.length;
+        int[] leftMax = new int[n];
+        int[] rightMax = new int[n];
+        leftMax[0] = 0;
+        rightMax[n - 1] = 0;
+        int max = 0;
+        for (int i = 1; i < n; i++) {
+            max = Math.max(max, height[i - 1]);
+            leftMax[i] = max;
+        }
+        max = 0;
+        for (int i = n - 2; i > 0; i--) {
+            max = Math.max(max, height[i + 1]);
+            rightMax[i] = max;
+        }
+        int result = 0;
+        for (int i = 1; i < n - 1; i++) {
+            int min = Math.min(leftMax[i], rightMax[i]);
+            result += Math.max(0, min - height[i]);
+        }
+        return result;
+    }
+
+    @Test
+    public void testP43() {
+        String num1 = "9";
+        String num2 = "99";
+        print(multiply(num1, num2));
+    }
+
+    public String multiply(String num1, String num2) {
+        if (num1.compareTo(num2) < 0) {
+            String temp = num1;
+            num1 = num2;
+            num2 = temp;
+        }
+        int carry = 0;
+        String result = "";
+        int n2 = num2.length() - 1;
+        StringBuilder zero = new StringBuilder();
+
+        while (n2 >= 0) {
+            int n2Val = num2.charAt(n2) - '0';
+
+            int n1 = num1.length() - 1;
+            StringBuilder sb = new StringBuilder();
+            while (n1 >= 0) {
+                int n1Val = num1.charAt(n1) - '0';
+                int multiVal = n1Val * n2Val + carry;
+                carry = multiVal / 10;
+                sb.append(multiVal % 10);
+
+                n1--;
+            }
+            if (carry > 0) {
+                sb.append(carry);
+            }
+            sb.reverse().append(zero);
+            result = addTowStringNum(result, sb.toString());
+
+            zero.append(0);
+            n2--;
+        }
+
+        return result;
+    }
+
+    public String addTowStringNum(String num1, String num2) {
+        int carry = 0;
+        int n1 = num1.length() - 1;
+        int n2 = num2.length() - 1;
+        StringBuilder result = new StringBuilder();
+        while (n2 >= 0 || n1 >= 0) {
+            if (n1 >= 0 && n2 >= 0) {
+                int val = num1.charAt(n1) - '0' + num2.charAt(n2) - '0' + carry;
+                carry = val / 10;
+                result.append(val % 10);
+                n2--;
+                n1--;
+            } else if (n1 >= 0) {
+                int val = num1.charAt(n1) - '0' + carry;
+                carry = val / 10;
+                result.append(val % 10);
+                n1--;
+            } else {
+                int val = num2.charAt(n2) - '0' + carry;
+                carry = val / 10;
+                result.append(val % 10);
+                n2--;
+            }
+        }
+        if (carry > 0) {
+            result.append(carry);
+        }
+        return result.reverse().toString();
     }
 }
