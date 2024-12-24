@@ -984,16 +984,19 @@ public class LC extends Base {
 
     @Test
     public void testP43() {
-        String num1 = "9";
-        String num2 = "99";
+        String num1 = "999";
+        String num2 = "999";
         print(multiply(num1, num2));
     }
 
     public String multiply(String num1, String num2) {
-        if (num1.compareTo(num2) < 0) {
+        if (num1.length() < num2.length()) {
             String temp = num1;
             num1 = num2;
             num2 = temp;
+        }
+        if (num2.equals("0")) {
+            return "0";
         }
         int carry = 0;
         String result = "";
@@ -1015,6 +1018,7 @@ public class LC extends Base {
             }
             if (carry > 0) {
                 sb.append(carry);
+                carry = 0;
             }
             sb.reverse().append(zero);
             result = addTowStringNum(result, sb.toString());
