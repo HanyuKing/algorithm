@@ -3,9 +3,6 @@ package com.why.algo;
 import org.junit.Test;
 
 import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * @Author Hanyu.Wang
@@ -13,7 +10,7 @@ import java.util.stream.Collectors;
  * @Description
  * @Version 1.0
  **/
-public class LC extends Base {
+public class LC50 extends Base {
 
     @Test
     public void testP12() {
@@ -1058,5 +1055,250 @@ public class LC extends Base {
             result.append(carry);
         }
         return result.reverse().toString();
+    }
+
+    @Test
+    public void testP45() {
+        int[] nums = new int[] {2,3,1,1,4};
+        print(jump(nums));
+
+        nums = new int[] {2,3,0,1,4};
+        print(jump(nums));
+    }
+    public int jump(int[] nums) {
+        int step = 0;
+        int maxIndex = 0;
+        int end = 0;
+        for (int i = 0; i < nums.length; i++) {
+            maxIndex = Math.max(maxIndex, i + nums[i]);
+            if (maxIndex >= nums.length - 1) {
+                step++;
+                break;
+            }
+            if (i == end) {
+                end = maxIndex;
+                step++;
+            }
+        }
+        return step;
+    }
+    public int jump2(int[] nums) {
+        int[] dp = new int[nums.length];
+        dp[0] = 0;
+        for (int i = 1; i < nums.length; i++) {
+            dp[i] = Integer.MAX_VALUE;
+            for (int j = i - 1; j >= 0; j--) {
+                if (nums[j] + j - i >= 0) {
+                    dp[i] = Math.min(dp[i], dp[j] + 1);
+                }
+            }
+        }
+        return dp[nums.length - 1];
+    }
+
+    @Test
+    public void testP46() {
+        int[] nums = new int[] {1,2,3};
+        print(permute(nums));
+    }
+
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        doPermute(nums, result, new ArrayList<>(), 0);
+        return result;
+    }
+
+    public void doPermute(int[] nums,
+                          List<List<Integer>> result,
+                          List<Integer> values,
+                          int index) {
+        if (values.size() == nums.length) {
+            result.add(new ArrayList<>(values));
+            return ;
+        }
+        for (int i = index; i < nums.length; i++) {
+            swap(nums, i, index);
+            values.add(nums[index]);
+            doPermute(nums, result, values, index + 1);
+            values.remove(values.size() - 1);
+            swap(nums, i, index);
+        }
+    }
+    private void swap(int[] nums, int i, int j) {
+        int temp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = temp;
+    }
+
+    @Test
+    public void testP47() {
+        print(permuteUnique(new int[] {2,2,1,1}));
+    }
+
+    public List<List<Integer>> permuteUnique(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        Arrays.sort(nums);
+        doPermuteUnique(nums, result, new ArrayList<>(), new boolean[nums.length], 0);
+        return result;
+    }
+
+    public void doPermuteUnique(int[] nums,
+                          List<List<Integer>> result,
+                          List<Integer> values,
+                          boolean[] visited,
+                          int index) {
+        if (values.size() == nums.length) {
+            result.add(new ArrayList<>(values));
+            return ;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (visited[i] || (i > 0 && !visited[i - 1] && nums[i] == nums[i - 1])) {
+                continue;
+            }
+            visited[i] = true;
+            values.add(nums[i]);
+            doPermuteUnique(nums, result, values, visited,index + 1);
+            values.remove(values.size() - 1);
+            visited[i] = false;
+        }
+    }
+
+    @Test
+    public void testP48() {
+        int[][] matrix = new int[][] {
+                {1, 2, 3},
+                {4, 5, 6},
+                {7, 8, 9}
+        };
+        rotate(matrix);
+        print(matrix);
+    }
+
+    public void rotate(int[][] matrix) {
+        int n = matrix.length;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                int temp = matrix[i][j];
+                matrix[i][j] = matrix[j][i];
+                matrix[j][i] = temp;
+             }
+        }
+        for (int i = 0; i < n; i++) {
+            int start = 0;
+            int end = n - 1;
+            while (start < end) {
+                int temp = matrix[i][start];
+                matrix[i][start] = matrix[i][end];
+                matrix[i][end] = temp;
+                start++;
+                end--;
+            }
+        }
+    }
+
+    @Test
+    public void testP49() {
+        String[] strs = new String[] {"eat", "tea", "tan", "ate", "nat", "bat"};
+                                  // [["bat"],["nat","tan"],["ate","eat","tea"]]
+        print(groupAnagrams(strs));
+    }
+
+    public List<List<String>> groupAnagrams(String[] strs) {
+        Map<String, List<String>> anagrams = new HashMap<>();
+        for (String str : strs) {
+            char[] chars = str.toCharArray();
+            Arrays.sort(chars);
+            String key = String.valueOf(chars);
+            if (anagrams.containsKey(key)) {
+                anagrams.get(key).add(str);
+            } else {
+                List<String> anagram = new ArrayList<>();
+                anagram.add(str);
+                anagrams.put(key, anagram);
+            }
+        }
+        return new ArrayList<>(anagrams.values());
+    }
+
+    @Test
+    public void testP50() {
+        print(myPow3(2, 10));
+        print(myPow3(2.1, 3));
+        print(myPow3(2, -2));
+        print(myPow3(0.44528, 0));
+    }
+    public double myPow3(double x, int n) {
+        /*
+            f(10) = f(5) * f(5)
+            f(6) = f(3) * f(3)
+            f(5) = f(2) * f(2) * x
+            f(4) = f(2) * f(2)
+            f(3) = f(1) * f(1) * x
+            f(2) = f(1) * f(1)
+            f(1) = 2
+         */
+        if (n == 0) {
+            return 1;
+        }
+        if (n == 1) {
+            return x;
+        }
+        double result = 1;
+        double contribute = x;
+        int absN = Math.abs(n);
+        while (absN > 0) {
+            // 10100
+            // 11
+            if ((absN & 1) == 1) {
+                result *= contribute;
+            }
+            contribute = contribute * contribute;
+            absN /= 2;
+        }
+        return n > 0 ? result : 1 / result;
+    }
+    public double myPow(double x, int n) {
+        /*
+            2 * 2 = 2^2
+            2^2 * 2^2 = 2^4
+            2^4 * 2^4 = 2^8
+
+            f(10) = f(5) * f(5)
+            f(6) = f(3) * f(3)
+            f(5) = f(2) * f(2) * x
+            f(4) = f(2) * f(2)
+            f(3) = f(1) * f(1) * x
+            f(2) = f(1) * f(1)
+            f(1) = 2
+         */
+
+        double result = doMyPow(x, Math.abs(n));
+
+        return n > 0 ? result : 1 / result;
+    }
+
+    public double doMyPow(double x, int n) {
+        if (n == 0) {
+            return 1;
+        }
+        if (n == 1) {
+            return x;
+        }
+        double result = doMyPow(x, n / 2);
+        result *= result;
+        if ((n & 1) == 1) {
+            result *= x;
+        }
+        return result;
+    }
+
+
+    public double myPow2(double x, int n) {
+        double result = 1;
+        int absN = Math.abs(n);
+        while (absN-- > 0) {
+            result *= x;
+        }
+        return n > 0 ? result : 1 / result;
     }
 }
