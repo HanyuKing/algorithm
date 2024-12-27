@@ -679,4 +679,388 @@ public class LC100 extends Base {
             }
         }
     }
+
+    @Test
+    public void testP77() {
+        print(combine(4, 2));
+        print(combine(1, 1));
+    }
+
+    public List<List<Integer>> combine(int n, int k) {
+        List<List<Integer>> result = new ArrayList<>();
+        doCombine(result, new ArrayList<>(), n, k);
+        return result;
+    }
+
+    public void doCombine(List<List<Integer>> result,
+                          List<Integer> selected,
+                          int n,
+                          int k) {
+        if (k == 0) {
+            result.add(new ArrayList<>(selected));
+            return ;
+        }
+        for (int i = n; i > 0; i--) {
+            selected.add(i);
+            doCombine(result, selected, i - 1, k - 1);
+            selected.remove(selected.size() - 1);
+        }
+    }
+
+    @Test
+    public void testP78() {
+        print(subsets(new int[] {1,2,3})); // [[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
+        print(subsets(new int[] {0})); // [[],[0]]
+    }
+
+    public List<List<Integer>> subsets(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        for (int len = 0; len <= nums.length; len++) {
+            List<List<Integer>> resultT = new ArrayList<>();
+            doSubsets(nums, resultT, new ArrayList<>(), 0, len);
+            result.addAll(resultT);
+        }
+        return result;
+    }
+
+    public void doSubsets(int[] nums,
+                          List<List<Integer>> result,
+                          List<Integer> selected,
+                          int index,
+                          int length) {
+        if (length == 0) {
+            result.add(new ArrayList<>(selected));
+            return;
+        }
+        for (int i = index; i < nums.length; i++) {
+            selected.add(nums[i]);
+            doSubsets(nums, result, selected, i + 1,length - 1);
+            selected.remove(selected.size() - 1);
+        }
+    }
+
+    @Test
+    public void testP79() {
+        char[][] board = {
+                {'A','B','C','E'},
+                {'S','F','C','S'},
+                {'A','D','E','E'}
+        };
+        String word = "ABCCEESEC";
+        print(exist(board, word));
+    }
+
+    public boolean exist(char[][] board, String word) {
+        visited = new boolean[board.length][board[0].length];
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                if (exist(board, i, j, 0, word)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    public boolean exist2(char[][] board, String word) {
+        visited = new boolean[board.length][board[0].length];
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                if (exist2(board, i, j, 0, word)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    private boolean[][] visited;
+    public boolean exist2(char[][] board,
+                         int i,
+                         int j,
+                         int index,
+                         String word) {
+        if (index == word.length()) {
+            return true;
+        }
+        if (i < 0 || j >= board[0].length || i >= board.length || j < 0) {
+            return false;
+        }
+        char targetChar = word.charAt(index);
+        boolean exist = false;
+        if (!visited[i][j] && board[i][j] == targetChar) {
+            visited[i][j] = true;
+            exist = exist(board, i, j - 1, index + 1, word);
+            if (!exist) {
+                exist = exist(board, i, j + 1, index + 1, word);
+            }
+            if (!exist) {
+                exist = exist(board, i - 1, j, index + 1, word);
+            }
+            if (!exist) {
+                exist = exist(board, i + 1, j, index + 1, word);
+            }
+            visited[i][j] = false;
+        }
+        return exist;
+    }
+    public boolean exist(char[][] board,
+                         int i,
+                         int j,
+                         int index,
+                         String word) {
+        if (index == word.length()) {
+            return true;
+        }
+        if (i < 0 || j >= board[0].length || i >= board.length || j < 0) {
+            return false;
+        }
+        char targetChar = word.charAt(index);
+        boolean exist = false;
+        if (board[i][j] != '0' && board[i][j] == targetChar) {
+            char temp = board[i][j];
+            board[i][j] = '0';
+            exist = exist(board, i, j - 1, index + 1, word);
+            if (!exist) {
+                exist = exist(board, i, j + 1, index + 1, word);
+            }
+            if (!exist) {
+                exist = exist(board, i - 1, j, index + 1, word);
+            }
+            if (!exist) {
+                exist = exist(board, i + 1, j, index + 1, word);
+            }
+            board[i][j] = temp;
+        }
+        return exist;
+    }
+
+    @Test
+    public void testP80() {
+        print(removeDuplicates(new int[] {1,1,1,2,2,3})); // 5. [1,1,2,2,3]
+        print(removeDuplicates(new int[] {0,0,1,1,1,1,2,3,3})); // 7. [0,0,1,1,2,3,3]
+
+    }
+
+    public int removeDuplicates(int[] nums) {
+        if (nums.length <= 2) {
+            return nums.length;
+        }
+        int newIndex = 1;
+        int count = 1;
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] == nums[i - 1]) {
+                if (count == 1) {
+                    count++;
+                    nums[newIndex++] = nums[i];
+                }
+            } else {
+                nums[newIndex++] = nums[i];
+                count = 1;
+            }
+        }
+
+        return newIndex;
+    }
+
+    @Test
+    public void testP81() {
+        print(search(new int[] {0,0,1,1,2,0}, 2)); // true
+        print(search(new int[] {1,0,1,1,1}, 0)); // true
+        print(search(new int[] {1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1}, 2)); // true
+    }
+
+    public boolean search(int[] nums, int target) {
+        return search(nums, 0, nums.length - 1, target);
+    }
+
+    public boolean search(int[] nums, int low, int high, int target) {
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            int midVal = nums[mid];
+            if (target == midVal) {
+                return true;
+            }
+
+            if (nums[low] == nums[high] && nums[high] == midVal) {
+                return search(nums, low, mid - 1, target) || search(nums, mid + 1, high, target);
+            }
+
+            if (target < midVal) {
+                if (nums[low] <= midVal) {
+                    if (target >= nums[low]) {
+                        high = mid - 1;
+                    } else {
+                        low = mid + 1;
+                    }
+                } else {
+                    high = mid - 1;
+                }
+            } else {
+                if (midVal <= nums[high]) {
+                    if (target <= nums[high]) {
+                        low = mid + 1;
+                    } else {
+                        high = mid - 1;
+                    }
+                } else {
+                    low = mid + 1;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    @Test
+    public void testP82() {
+        // head = [1,1,1,2,3]  2,3
+        ListNode n1 = new ListNode(1);
+        ListNode n2 = new ListNode(1);
+        ListNode n3 = new ListNode(1);
+        ListNode n4 = new ListNode(2);
+        ListNode n5 = new ListNode(3);
+        n1.next = n2;
+        n2.next = n3;
+        n3.next = n4;
+        n4.next = n5;
+        print(deleteDuplicates(n1));
+    }
+
+    public ListNode deleteDuplicates(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode newHead = new ListNode();
+        ListNode tail = newHead;
+        ListNode pre = head;
+        boolean preDuplicate = false;
+        head = head.next;
+        while (head != null) {
+            if (head.val != pre.val) {
+                if (!preDuplicate) {
+                    pre.next = null;
+                    tail.next = pre;
+                    tail = pre;
+                } else {
+                    preDuplicate = false;
+                }
+                pre = head;
+            } else {
+                preDuplicate = true;
+            }
+            head = head.next;
+        }
+        if (!preDuplicate) {
+            tail.next = pre;
+        }
+        return newHead.next;
+    }
+
+    @Test
+    public void testP83() {
+        // head = [1,1,1,2,3]  1,2,3
+        ListNode n1 = new ListNode(1);
+        ListNode n2 = new ListNode(1);
+        ListNode n3 = new ListNode(1);
+        ListNode n4 = new ListNode(2);
+        ListNode n5 = new ListNode(3);
+        n1.next = n2;
+        n2.next = n3;
+        n3.next = n4;
+        n4.next = n5;
+        print(deleteDuplicates2(n1));
+    }
+
+    public ListNode deleteDuplicates2(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode pre = head;
+        ListNode tail = head;
+        ListNode pHead = head.next;
+        tail.next = null;
+        while (pHead != null) {
+            if (pHead.val != pre.val) {
+                pre = pHead;
+                tail.next = pHead;
+                tail = pHead;
+                pHead = pHead.next;
+                tail.next = null;
+            } else {
+                pHead = pHead.next;
+            }
+        }
+        return head;
+    }
+
+    @Test
+    public void testP86() {
+// head = [1,1,1,2,3]  1,2,3
+        ListNode n1 = new ListNode(1);
+        ListNode n2 = new ListNode(4);
+        ListNode n3 = new ListNode(3);
+        ListNode n4 = new ListNode(2);
+        ListNode n5 = new ListNode(5);
+        ListNode n6 = new ListNode(2);
+        n1.next = n2;
+        n2.next = n3;
+        n3.next = n4;
+        n4.next = n5;
+        n5.next = n6;
+        print(partition(n1, 3));
+    }
+    public ListNode partition(ListNode head, int x) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode l1 = new ListNode();
+        ListNode l2 = new ListNode();
+        ListNode l1Tail = l1;
+        ListNode l2Tail = l2;
+        while (head != null) {
+            if (head.val < x) {
+                l1Tail.next = head;
+                l1Tail = head;
+                head = head.next;
+                l1Tail.next = null;
+            } else {
+                l2Tail.next = head;
+                l2Tail = head;
+                head = head.next;
+                l2Tail.next = null;
+            }
+        }
+        l1Tail.next = l2.next;
+        return l1.next;
+    }
+
+    @Test
+    public void testP88() {
+        int[] nums1 = new int[] {4,5,6,0,0,0};
+        int m = 3;
+        int[] nums2 = new int[] {1,2,3};
+        int n = 3;
+        merge(nums1, m, nums2, n);
+        print(nums1);
+    }
+    public void merge(int[] nums1, int m, int[] nums2, int n) {
+        if (m == 0) { // todo
+            return;
+        }
+        int i = m - 1;
+        int j = n - 1;
+        int index = nums1.length - 1;
+        while (i >= 0 || j >= 0) {
+            if (i >= 0 && j >= 0) {
+                if (nums1[i] > nums2[j]) {
+                    nums1[index--] = nums1[i--];
+                } else {
+                    nums1[index--] = nums2[j--];
+                }
+            } else if (i > 0) {
+                return;
+            } else {
+                nums1[index--] = nums2[j--];
+            }
+        }
+    }
 }
