@@ -257,4 +257,222 @@ public class LC100 extends Base {
         tail.next = head;
         return newHead;
     }
+
+    @Test
+    public void testP74() {
+        // PASS
+        // searchMatrix
+    }
+
+    public boolean searchMatrix(int[][] matrix, int target) {
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int low = 0;
+        int high = m * n  - 1;
+        while (low <= high) {
+            int mid = low + (high  - low) / 2;
+            int midVal = matrix[mid / n][mid % n];
+            if (target == midVal) {
+                return true;
+            } else if (target < midVal) {
+                high = mid - 1;
+            } else {
+                low = mid + 1;
+            }
+        }
+        return false;
+    }
+
+    @Test
+    public void testP75() {
+        int[] nums = new int[] {2,0,2,1,1,0};
+//        sortColors(nums);
+//        print(nums);
+
+        nums = new int[] {1,2,1};
+        sortColors(nums);
+        print(nums);
+    }
+
+    public void sortColors(int[] nums) {
+        int a = 0;
+        int c = nums.length - 1;
+        while (a < c) {
+            if (nums[a] == 0) {
+                a++;
+                continue;
+            }
+            if (nums[c] == 0) {
+                swap(nums, a, c);
+            } else if (nums[c] == 1 && nums[a] == 2) {
+                swap(nums, a, c);
+                c--;
+            } else {
+                c--;
+            }
+        }
+    }
+    private void swap(int[] nums, int i, int j) {
+        int t = nums[i];
+        nums[i] = nums[j];
+        nums[j] = t;
+    }
+
+    @Test
+    public void testP90() {
+        print(subsetsWithDup(new int[] {1,2,2}));
+    }
+
+    public List<List<Integer>> subsetsWithDup2(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        Arrays.sort(nums);
+        for (int i = 0; i <= nums.length; i++) {
+            doSubsetsWithDup2(result, new ArrayList<>(), nums, 0, i);
+        }
+        return result;
+    }
+    public void doSubsetsWithDup2(
+            List<List<Integer>> result,
+            List<Integer> curr,
+            int[] nums,
+            int index,
+            int subsetCount) {
+
+        if (subsetCount == curr.size()) {
+            result.add(new ArrayList<>(curr));
+            return;
+        }
+
+        for (int i = index; i < nums.length; i++) {
+            if (i > index && nums[i] == nums[i - 1]) {
+                continue;
+            }
+            curr.add(nums[i]);
+            doSubsetsWithDup2(result, curr, nums, i + 1, subsetCount);
+            curr.remove(curr.size() - 1);
+        }
+    }
+    public List<List<Integer>> subsetsWithDup(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        Arrays.sort(nums);
+        doSubsetsWithDup(result, new ArrayList<>(), nums, 0);
+        return result;
+    }
+    public void doSubsetsWithDup(
+            List<List<Integer>> result,
+            List<Integer> curr,
+            int[] nums,
+            int index) {
+
+        result.add(new ArrayList<>(curr));
+
+        for (int i = index; i < nums.length; i++) {
+            if (i > index && nums[i] == nums[i - 1]) {
+                continue;
+            }
+            curr.add(nums[i]);
+            doSubsetsWithDup(result, curr, nums, i + 1);
+            curr.remove(curr.size() - 1);
+        }
+    }
+
+    @Test
+    public void testP95() {
+        print(generateTrees(3));
+    }
+    public List<TreeNode> generateTrees(int n) {
+        if (n == 0) {
+            return new LinkedList<TreeNode>();
+        }
+        return generateTrees(1, n);
+    }
+
+    public List<TreeNode> generateTrees(int start, int end) {
+        List<TreeNode> allTrees = new LinkedList<TreeNode>();
+        if (start > end) {
+            allTrees.add(null);
+            return allTrees;
+        }
+        for (int i = start; i <= end; i++) {
+            List<TreeNode> leftTrees = generateTrees(start, i - 1);
+            List<TreeNode> rightTrees = generateTrees(i + 1, end);
+            for (TreeNode leftTree : leftTrees) {
+                for (TreeNode rightTree : rightTrees) {
+                    TreeNode currTree = new TreeNode(i);
+                    currTree.left = leftTree;
+                    currTree.right = rightTree;
+                    allTrees.add(currTree);
+                }
+            }
+        }
+        return allTrees;
+    }
+
+    @Test
+    public void testP96() {
+        print(numTrees(3));
+    }
+    public int numTrees(int n) {
+        int[] dp = new int[n + 1];
+        dp[0] = 1;
+        dp[1] = 1;
+        for (int i = 2; i <= n; i++) {
+            for (int j = 1; j <= i; j++) {
+                dp[i] += dp[i - j] * dp[j - 1];
+            }
+        }
+        return dp[n];
+    }
+
+    @Test
+    public void testP98() {
+
+    }
+    public boolean isValidBST(TreeNode root) {
+        if (root == null) {
+            return true;
+        }
+        Integer max = Integer.MAX_VALUE;
+        Integer min = Integer.MIN_VALUE;
+        return isValidBST(root, max, min);
+    }
+
+    public boolean isValidBST(TreeNode root, int max, int min) {
+        if (root == null) {
+            return true;
+        }
+        if (root.val <= min || root.val >= max) {
+            return false;
+        }
+        return isValidBST(root.left, root.val, min) && isValidBST(root.right, max, root.val);
+    }
+
+    @Test
+    public void testP97() {
+        print(isInterleave("dbbca", "aabcc", "aadbbcbcac"));
+    }
+
+    public boolean isInterleave(String s1, String s2, String s3) {
+        int m = s1.length();
+        int n = s2.length();
+        //dp[i][j] means the res of s1[0..i-1], s2[0..j-1], s3[0..i+j-1]
+        boolean[][] dp = new boolean[m+1][n+1];
+        dp[0][0] = true;
+        for(int i = 1; i <= m; i++){
+            dp[i][0] = dp[i - 1][0] && s1.charAt(i - 1) == s3.charAt(i - 1);
+        }
+
+        for(int j = 1; j <= n; j++){
+            dp[0][j] = dp[0][j - 1] && s2.charAt(j - 1) == s3.charAt(j - 1);
+        }
+
+        for(int i = 1; i <= m; i++){
+            for(int j = 1; j <= n; j++){
+                int p = i + j - 1;
+                dp[i][j] = (s1.charAt(i - 1) == s3.charAt(p) && dp[i - 1][j])
+                        || (s2.charAt(j - 1) == s3.charAt(p) && dp[i][j - 1]);
+            }
+        }
+        return dp[m][n];
+    }
 }
