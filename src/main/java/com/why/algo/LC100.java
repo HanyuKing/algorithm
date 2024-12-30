@@ -1035,17 +1035,14 @@ public class LC100 extends Base {
 
     @Test
     public void testP88() {
-        int[] nums1 = new int[] {4,5,6,0,0,0};
-        int m = 3;
-        int[] nums2 = new int[] {1,2,3};
-        int n = 3;
+        int[] nums1 = new int[] {1};
+        int m = 1;
+        int[] nums2 = new int[] {};
+        int n = 0;
         merge(nums1, m, nums2, n);
         print(nums1);
     }
     public void merge(int[] nums1, int m, int[] nums2, int n) {
-        if (m == 0) { // todo
-            return;
-        }
         int i = m - 1;
         int j = n - 1;
         int index = nums1.length - 1;
@@ -1056,7 +1053,7 @@ public class LC100 extends Base {
                 } else {
                     nums1[index--] = nums2[j--];
                 }
-            } else if (i > 0) {
+            } else if (i >= 0) {
                 return;
             } else {
                 nums1[index--] = nums2[j--];
