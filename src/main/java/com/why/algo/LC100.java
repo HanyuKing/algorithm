@@ -1060,4 +1060,230 @@ public class LC100 extends Base {
             }
         }
     }
+
+    @Test
+    public void testP91() {
+        print(numDecodings("12"));
+        print(numDecodings("226"));
+        print(numDecodings("06"));
+        print(numDecodings("0"));
+    }
+
+    public int numDecodings2(String s) {
+        /*
+            f(n) = f(n - 1) + f(n - 2)
+            226 = 2 + 1
+         */
+        int[] dp = new int[s.length() + 2];
+        dp[0] = 0;
+        dp[1] = 1;
+        for (int i = 2; i < dp.length; i++) {
+            if (s.charAt(i - 2) - '0' >= 1 && s.charAt(i - 2) - '0' <= 26) {
+                dp[i] = dp[i - 1];
+            }
+            if (i > 2) {
+                char pre = s.charAt(i - 2 - 1);
+                if (pre == '1' || pre == '2') {
+                    int num = Integer.parseInt(s.substring(i - 1 - 2, i + 1 - 2));
+                    if (num >= 1 && num <= 26) {
+                        dp[i] += dp[i - 2];
+                    }
+                }
+            }
+            if (dp[i] == 0) {
+                return 0;
+            }
+        }
+        return dp[s.length() + 1];
+    }
+    public int numDecodings(String s) {
+        /*
+            f(n) = f(n - 1) + f(n - 2)
+            226 = 2 + 1
+         */
+        int pp = 0;
+        int p = 1;
+        int ans = 0;
+        for (int i = 2; i < s.length() + 2; i++) {
+            int curr = 0;
+            if (s.charAt(i - 2) - '0' >= 1 && s.charAt(i - 2) - '0' <= 26) {
+                curr = p;
+            }
+            if (i > 2) {
+                char pre = s.charAt(i - 2 - 1);
+                if (pre == '1' || pre == '2') {
+                    int num = Integer.parseInt(s.substring(i - 1 - 2, i + 1 - 2));
+                    if (num >= 1 && num <= 26) {
+                        curr += pp;
+                    }
+                }
+            }
+            if (curr == 0) {
+                return 0;
+            }
+            ans = curr;
+            pp = p;
+            p = curr;
+        }
+        return ans;
+    }
+
+    @Test
+    public void testP92() {
+        ListNode n1 = new ListNode(1);
+        ListNode n2 = new ListNode(2);
+        ListNode n3 = new ListNode(3);
+        ListNode n4 = new ListNode(4);
+        ListNode n5 = new ListNode(5);
+        n1.next = n2;
+        n2.next = n3;
+//        n3.next = n4;
+//        n4.next = n5;
+        print(reverseBetween(n1, 1, 2));
+    }
+
+    public ListNode reverseBetween(ListNode head, int left, int right) {
+        if (left == right) {
+            return head;
+        }
+        int gap = right - left;
+        ListNode fast = head;
+        ListNode slow = head;
+        ListNode l1Tail = null;
+        ListNode l3Head = null;
+        while (fast != null && gap-- > 0) {
+            fast = fast.next;
+        }
+        while (slow != null && fast != null && left > 1) {
+            l1Tail = slow;
+            slow = slow.next;
+            fast = fast.next;
+            left--;
+        }
+        if (l1Tail != null) {
+            l1Tail.next = null;
+        }
+        if (fast != null) {
+            l3Head = fast.next;
+            fast.next = null;
+        }
+
+        // reverse
+        ListNode p = slow;
+        ListNode q = slow.next;
+        p.next = null;
+        while (q != null) {
+            ListNode r = q.next;
+            q.next = p;
+            p = q;
+            q = r;
+        }
+        slow.next = l3Head;
+        if (l1Tail == null) {
+            return p;
+        }
+        l1Tail.next = p;
+        return head;
+    }
+
+    @Test
+    public void testP93() {
+        print(restoreIpAddresses("25525511135"));
+        print(restoreIpAddresses("0000"));
+        print(restoreIpAddresses("101023"));
+    }
+
+    public List<String> restoreIpAddresses(String s) {
+        List<String> result = new ArrayList<>();
+        restoreIpAddresses(result, s, new StringBuilder(), 0, 4);
+        return result;
+    }
+
+    public void restoreIpAddresses(List<String> result,
+                                   String s,
+                                   StringBuilder sb,
+                                   int index,
+                                   int count) {
+        if (count == 0 && sb.length() == s.length() + 4) {
+            result.add(sb.deleteCharAt(sb.length() - 1).toString());
+            return;
+        }
+        if (index == s.length()) {
+            return;
+        }
+        for (int i = index; i < s.length(); i++) {
+            int sbLen = sb.length();
+            String num = s.substring(index, i + 1);
+            if (num.length() > 1 && num.charAt(0) == '0'
+                    || num.length() > 3
+                    || Integer.parseInt(num) > 255) {
+                continue;
+            }
+            sb.append(num).append(".");
+            restoreIpAddresses(result, s, sb, i + 1, count - 1);
+            sb.delete(sbLen, sb.length());
+        }
+    }
+
+    @Test
+    public void testP94() {
+        TreeNode root = new TreeNode(1);
+        TreeNode n2 = new TreeNode(2);
+        TreeNode n3 = new TreeNode(3);
+        root.right = n2;
+        n2.left = n3;
+        print(inorderTraversal(root));
+    }
+
+    public List<Integer> inorderTraversal(TreeNode root) {
+        if (root == null) {
+            return new ArrayList<>();
+        }
+        List<Integer> result = new ArrayList<>();
+        Stack<TreeNode> stack = new Stack<>();
+        while (root != null || !stack.isEmpty()) {
+            while (root != null) {
+                stack.push(root);
+                root = root.left;
+            }
+            root = stack.pop();
+            result.add(root.val);
+            root = root.right;
+        }
+        return result;
+    }
+
+    @Test
+    public void testP95() {
+
+    }
+
+    @Test
+    public void testP96() {
+        print(numTrees(1));
+        print(numTrees(2));
+        print(numTrees(3));
+        print(numTrees(4));
+        print(numTrees(5));
+    }
+
+    public int numTrees(int n) {
+        if (n == 1) {
+            return n;
+        }
+        /*
+            f(0) = 1;
+            f(1) = 1;
+            f(2) = 2; f(2 - 1) + 1
+            f(3) = 5; f(2) + f(2) + 1
+         */
+        int[] dp = new int[n + 1];
+        dp[0] = 1;
+        dp[1] = 1;
+        dp[2] = 2;
+        for (int i = 3; i <= n; i++) {
+            dp[i] = 2 * dp[i - 1] + 1;
+        }
+        return dp[n];
+    }
 }
