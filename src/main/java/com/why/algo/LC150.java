@@ -318,6 +318,100 @@ public class LC150 extends Base {
     }
 
     @Test
+    public void testP121() {
+        print(maxProfit(new int[] {7,1,5,3,6,4}));
+    }
+
+    public int maxProfit(int[] prices) {
+        int min = prices[0];
+        int maxProfit = 0;
+        for (int i = 1; i < prices.length; i++) {
+            if (prices[i] > min) {
+                maxProfit = Math.max(maxProfit, prices[i] - min);
+            }
+            min = Math.min(min, prices[i]);
+        }
+
+        return maxProfit;
+    }
+
+    @Test
+    public void testP122() {
+        print(maxProfit122(new int[] {7,1,5,3,6,4})); // 7
+        print(maxProfit122DP(new int[] {1,2,3,4,5})); // 4
+
+        print(maxProfit122DP2(new int[] {1,3,6,4})); // 5
+    }
+
+    public int maxProfit122DP2(int[] prices) {
+        int out = 0;
+        int buy = -prices[0];
+        for (int i = 1; i < prices.length; i++) {
+            int currOut = Math.max(out, buy + prices[i]);
+            int currBuy = Math.max(out - prices[i], buy);
+            out = currOut;
+            buy = currBuy;
+        }
+        return out;
+    }
+
+    public int maxProfit122DP(int[] prices) {
+        int[][] dp = new int[prices.length][2];
+        dp[0][0] = 0;
+        dp[0][1] = -prices[0];
+        for (int i = 1; i < prices.length; i++) {
+            dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1] + prices[i]);
+            dp[i][1] = Math.max(dp[i - 1][0] - prices[i], dp[i - 1][1]);
+        }
+        return dp[prices.length - 1][0];
+    }
+
+
+    public int maxProfit122(int[] prices) {
+        int max = -1;
+        int maxProfit = 0;
+        for (int i = prices.length - 1; i >= 0; i--) {
+            if (prices[i] < max) {
+                maxProfit += max - prices[i];
+                max = -1;
+            }
+            max = Math.max(max, prices[i]);
+        }
+
+        return maxProfit;
+    }
+
+    @Test
+    public void testP125() {
+        print(isPalindrome("A man, a plan, a canal: Panama"));
+    }
+
+    public boolean isPalindrome(String s) {
+        if (s.isEmpty()) {
+            return true;
+        }
+        char[] chars = s.toLowerCase().toCharArray();
+        int start = 0;
+        int end = s.length() - 1;
+        while (start < end) {
+            if (!((chars[start] >= 'a' && chars[start] <= 'z')
+                    || (chars[start] >= '0' && chars[start] <= '9'))) {
+                start++;
+                continue;
+            }
+            if (!((chars[end] >= 'a' && chars[end] <= 'z')
+                    || (chars[end] >= '0' && chars[end] <= '9'))) {
+                end--;
+                continue;
+            }
+            if (chars[start++] != chars[end--]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Test
     public void testP128() {
         print(longestConsecutive(new int[] {0,0,1,-1}));
         print(longestConsecutive(new int[] {100,4,200,1,3,2}));
