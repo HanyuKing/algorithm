@@ -43,4 +43,11 @@ public class Base {
         public ListNode() {}public ListNode(int val) { this.val = val; }
         public ListNode(int val, ListNode next) { this.val = val; this.next = next; }
   }
+
+    public class Node {
+        public int val;
+        public Node left;
+        public Node right;
+        public Node next;
+    }
 }

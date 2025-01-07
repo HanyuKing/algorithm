@@ -1,5 +1,6 @@
 package com.why.algo;
 
+import com.sun.jmx.snmp.SnmpNull;
 import org.junit.Test;
 
 import java.util.*;
@@ -102,6 +103,218 @@ public class LC150 extends Base {
             root.right = sortedArrayToBST(nums, mid + 1, (mid + 1) + (r - mid - 1) / 2, r);
         }
         return root;
+    }
+
+    @Test
+    public void testP109() {
+
+    }
+
+    public TreeNode sortedListToBST(ListNode head) {
+        if (head == null) {
+            return null;
+        }
+        if (head.next == null) {
+            return new TreeNode(head.val);
+        }
+        ListNode slow = head;
+        ListNode fast = head;
+        ListNode pre = null;
+        while (fast != null && fast.next != null) {
+            pre = slow;
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        pre.next = null;
+        TreeNode root = new TreeNode(slow.val);
+        root.left = sortedListToBST(head);
+        root.right = sortedListToBST(slow.next);
+        return root;
+    }
+
+    @Test
+    public void testP110() {
+
+    }
+
+    public boolean isBalanced(TreeNode root) {
+        if (root == null) {
+            return true;
+        }
+        return treeDepth(root) > 1;
+    }
+
+    public int treeDepth(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        int leftDepth = treeDepth(root.left);
+        int rightDepth = treeDepth(root.right);
+        if (Math.abs(leftDepth - rightDepth) > 1) {
+            return -1;
+        }
+        return Math.max(leftDepth, rightDepth) + 1;
+    }
+
+    @Test
+    public void testP111() {
+
+    }
+
+    public int minDepth(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        if (root.left == null && root.right == null) {
+            return 1;
+        }
+        int leftMin = 0;
+        int rightMin = 0;
+        if (root.left != null) {
+            leftMin = minDepth(root.left);
+        }
+        if (root.right != null) {
+            rightMin = minDepth(root.right);
+        }
+
+        return root.left == null || root.right == null ? leftMin + rightMin + 1: Math.min(leftMin, rightMin) + 1;
+    }
+
+    @Test
+    public void testP112() {
+
+    }
+
+    public boolean hasPathSum(TreeNode root, int targetSum) {
+        if (root == null) {
+            return false;
+        }
+        if (root.left == null && root.right == null && root.val == targetSum) {
+            return true;
+        }
+        return hasPathSum(root.left, targetSum - root.val)
+                || hasPathSum(root.right, targetSum - root.val);
+    }
+
+    @Test
+    public void testP113() {
+
+    }
+
+    List<List<Integer>> pathSumResult = new ArrayList<>();
+    public List<List<Integer>> pathSum(TreeNode root, int targetSum) {
+        doPathSum(root, new ArrayList<>(), targetSum);
+        return pathSumResult;
+    }
+
+    public void doPathSum(TreeNode root, List<Integer> currPath, int targetSum) {
+        if (root == null) {
+            return;
+        }
+        currPath.add(root.val);
+        if(root.left == null && root.right == null && root.val == targetSum) {
+            pathSumResult.add(new ArrayList<>(currPath));
+            currPath.remove(currPath.size() - 1);
+            return ;
+        }
+        doPathSum(root.left, currPath, targetSum - root.val);
+        doPathSum(root.right, currPath, targetSum - root.val);
+        currPath.remove(currPath.size() - 1);
+    }
+
+    @Test
+    public void testP116() {
+
+    }
+
+    public Node connect(Node root) {
+        if (root == null) {
+            return root;
+        }
+        Node leftmost = root;
+        while (leftmost.left != null) {
+            Node head = leftmost;
+            while (head != null) {
+                head.left.next = head.right;
+                if (head.next != null) {
+                    head.right.next = head.next.left;
+                }
+                head = head.next;
+            }
+            leftmost = leftmost.left;
+        }
+        return root;
+    }
+
+    @Test
+    public void testP117() {
+
+    }
+
+    public Node connect117(Node root) {
+        if (root == null) {
+            return root;
+        }
+        Queue<Node> queue = new LinkedList<>();
+        queue.offer(root);
+        int layerSize = 1;
+        while (!queue.isEmpty()) {
+            int nextLayerSize = 0;
+            Node tail = null;
+            for (int i = 1; i <= layerSize; i++) {
+                if (i == 1) {
+                    tail = queue.poll();
+                } else {
+                    Node node = queue.poll();
+                    tail.next = node;
+                    tail = node;
+                }
+                if (tail.left != null) {
+                    queue.offer(tail.left);
+                    nextLayerSize++;
+                }
+                if (tail.right != null) {
+                    queue.offer(tail.right);
+                    nextLayerSize++;
+                }
+            }
+            layerSize = nextLayerSize;
+        }
+        return root;
+    }
+
+    @Test
+    public void testP120() {
+
+    }
+
+    public int minimumTotal(List<List<Integer>> triangle) {
+        int maxCol = triangle.get(triangle.size() - 1).size();
+        int[] dp = new int[maxCol];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = triangle.get(0).get(0);
+        int m = triangle.size();
+
+        if (m == 1) {
+            return dp[0];
+        }
+
+        int minniNum = Integer.MAX_VALUE;
+        for (int i = 1; i < m; i++) {
+            List<Integer> rowNumberList = triangle.get(i);
+            int n = rowNumberList.size();
+            for (int j = n - 1; j >= 0; j--) {
+                if (j == 0) {
+                    dp[j] = dp[j] + rowNumberList.get(j);
+                } else {
+                    dp[j] = Math.min(dp[j], dp[j - 1]) + rowNumberList.get(j);
+                }
+                if (i == m - 1) {
+                    minniNum = Math.min(minniNum, dp[j]);
+                }
+            }
+        }
+        return minniNum;
     }
 
     @Test
