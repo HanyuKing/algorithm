@@ -441,4 +441,213 @@ public class LC150 extends Base {
         }
         return max;
     }
+
+    @Test
+    public void testP129() {
+        TreeNode root = new TreeNode(1);
+        root.left = new TreeNode(2);
+        root.right = new TreeNode(3);
+        print(sumNumbers(root));
+    }
+
+    int sum129 = 0;
+    public int sumNumbers(TreeNode root) {
+        sumNumbers(root, 0);
+        return sum129;
+    }
+
+    public void sumNumbers(TreeNode root, int preNum) {
+        if (root == null) {
+            return;
+        }
+        if (root.left == null && root.right == null) {
+            sum129 += preNum * 10 + root.val;
+            return;
+        }
+        sumNumbers(root.left, preNum * 10 + root.val);
+        sumNumbers(root.right, preNum * 10 + root.val);
+    }
+
+    @Test
+    public void testP130() {
+        char[][] board = new char[][] {
+                {'X','X','X','X'},
+                {'X','O','O','X'},
+                {'X','X','O','X'},
+                {'X','O','X','X'}
+        };
+        // solve(board);
+        bfsSolve(board);
+        print(board);
+    }
+
+    public void bfsSolve(char[][] board) {
+        Queue<int[]> queue = new LinkedList<>();
+        for (int i = 0; i < board.length; i++) {
+            if (board[i][0] == 'O') {
+                queue.offer(new int[] {i, 0});
+                board[i][0] = 'A';
+            }
+            if (board[i][board[0].length - 1] == 'O') {
+                board[i][board[0].length - 1] = 'A';
+                queue.offer(new int[] {i, board[0].length - 1});
+            }
+        }
+        for (int j = 0; j < board[0].length; j++) {
+            if (board[board.length - 1][j] == 'O') {
+                queue.offer(new int[] {board.length - 1, j});
+                board[board.length - 1][j] = 'A';
+            }
+            if (board[0][j] == 'O') {
+                queue.offer(new int[] {0, j});
+                board[0][j] = 'A';
+            }
+        }
+        int col = board[0].length;
+        int row = board.length;
+        while (!queue.isEmpty()) {
+            int[] ij = queue.poll();
+            int i = ij[0];
+            int j = ij[1];
+            if (i + 1 >= 0 && i + 1 < row && j < col && j >= 0 && board[i + 1][j] == 'O') {
+                board[i + 1][j] = 'A';
+                queue.offer(new int[] {i + 1, j});
+            }
+            if (i - 1 >= 0 && i - 1 < row && j < col && j >= 0 && board[i - 1][j] == 'O') {
+                board[i - 1][j] = 'A';
+                queue.offer(new int[] {i - 1, j});
+            }
+            if (i >= 0 && i < row && j - 1 < col && j - 1 >= 0 && board[i][j - 1] == 'O') {
+                board[i][j - 1] = 'A';
+                queue.offer(new int[] {i, j - 1});
+            }
+            if (i >= 0 && i < row && j + 1 < col && j + 1 >= 0 && board[i][j + 1] == 'O') {
+                board[i][j + 1] = 'A';
+                queue.offer(new int[] {i, j + 1});
+            }
+        }
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                if (board[i][j] == 'A'){
+                    board[i][j] = 'O';
+                } else if (board[i][j] == 'O') {
+                    board[i][j] = 'X';
+                }
+            }
+        }
+    }
+
+    public void solve(char[][] board) {
+        for (int i = 0; i < board.length; i++) {
+            dfsSolve(board, i, 0);
+            dfsSolve(board, i, board[0].length - 1);
+        }
+        for (int j = 0; j < board[0].length; j++) {
+            dfsSolve(board, board.length - 1, j);
+            dfsSolve(board, 0, j);
+        }
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                if (board[i][j] == '2') {
+                    board[i][j] = 'O';
+                } else {
+                    board[i][j] = 'X';
+                }
+            }
+        }
+    }
+
+    public void dfsSolve(char[][] board, int i, int j) {
+        if (i < 0 || i >= board.length
+                || j < 0 || j >= board[0].length
+                || board[i][j] == '1'
+                || board[i][j] == '2') {
+            return;
+        }
+        if (board[i][j] == 'O') {
+            board[i][j] = '2';
+            dfsSolve(board, i - 1, j);
+            dfsSolve(board, i + 1, j);
+            dfsSolve(board, i, j - 1);
+            dfsSolve(board, i, j + 1);
+        } else {
+            board[i][j] = '1';
+        }
+    }
+
+    @Test
+    public void testP131() {
+        print(partition("aab"));
+    }
+
+    public List<List<String>> partition(String s) {
+        int n = s.length();
+        boolean[][] f = new boolean[n][n];
+        for (int i = 0 ; i < n; i++) {
+            Arrays.fill(f[i], true);
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = i + 1; j < n; j++) {
+                f[i][j] = s.charAt(i) == s.charAt(j) && f[i + 1][j - 1];
+            }
+        }
+        List<List<String>> result = new ArrayList<>();
+        dfsPartition(result, new ArrayList<>(), s, f, 0);
+        return result;
+    }
+
+    private void dfsPartition(List<List<String>> result,
+                              List<String> curr,
+                              String s,
+                              boolean[][] f,
+                              int i) {
+        if (i == s.length()) {
+            result.add(new ArrayList<>(curr));
+            return;
+        }
+        for (int j = i; j < s.length(); j++) {
+            if (f[i][j]) {
+                curr.add(s.substring(i, j + 1));
+                dfsPartition(result, curr, s, f, j + 1);
+                curr.remove(curr.size() - 1);
+            }
+        }
+    }
+
+    @Test
+    public void testP134() {
+        print(canCompleteCircuit(new int[] {1,2,3,4,5}, new int[] {3,4,5,1,2}));
+        print(canCompleteCircuit(new int[] {2,3,4}, new int[] {3,4,3}));
+    }
+
+    public int canCompleteCircuit(int[] gas, int[] cost) {
+        int gasTotal = 0;
+        for (int i = 0; i < gas.length; i++) {
+            gasTotal = gas[i];
+            if (gasTotal == 0) {
+                continue;
+            }
+            int count = 0;
+            for (int j = i + 1; j <= cost.length; j++) {
+                if (count == cost.length) {
+                    return i;
+                }
+                if (j == cost.length) {
+                    j = 0;
+                    if (gasTotal < cost[cost.length - 1]) {
+                        break;
+                    }
+                    gasTotal = gasTotal - cost[cost.length - 1] + gas[j];
+                } else {
+                    if (gasTotal < cost[j - 1]) {
+                        break;
+                    }
+                    gasTotal = gasTotal - cost[j - 1] + gas[j];
+                }
+
+                count++;
+            }
+        }
+        return -1;
+    }
 }
