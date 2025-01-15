@@ -647,7 +647,290 @@ public class LC150 extends Base {
 
                 count++;
             }
+            i += count;
         }
         return -1;
     }
+
+    @Test
+    public void testP136() {
+        print(singleNumber(new int[] {2,2,1}));
+        print(singleNumber(new int[] {4,1,2,1,2}));
+    }
+
+    public int singleNumber(int[] nums) {
+        int ans = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            ans ^= nums[i];
+        }
+        return ans;
+    }
+
+    @Test
+    public void testP138() {
+        Node head = new Node(1);
+        Node head2 = new Node(2);
+        head.next = head2;
+        head.random = head2;
+        head2.random = head2;
+        print(copyRandomList(head));
+    }
+
+    public Node copyRandomList(Node head) {
+        if (head == null) {
+            return head;
+        }
+        Map<Integer, Node> copiedMap = new HashMap<>();
+        Map<Node, Integer> originMap = new HashMap<>();
+        Node newHead = new Node(-1);
+        Node newTail = newHead;
+        Node headTemp = head;
+        int i = 0;
+        while (head != null) {
+            Node newNode = new Node(-1);
+            newNode.val = head.val;
+            newTail.next = newNode;
+            newTail = newNode;
+            copiedMap.put(i++, newNode);
+            originMap.put(head, i - 1);
+
+            head = head.next;
+        }
+        Node newHeadTemp = newHead.next;
+        while (headTemp != null) {
+            if (headTemp.random != null) {
+                Node node = copiedMap.get(originMap.get(headTemp.random));
+                newHeadTemp.random = node;
+            }
+
+            newHeadTemp = newHeadTemp.next;
+            headTemp = headTemp.next;
+        }
+        return newHead.next;
+    }
+
+    @Test
+    public void testP139() {
+        print(wordBreak("leetcode", new ArrayList<>(Arrays.asList("leet", "code"))));
+        print(wordBreak("applepenapple", new ArrayList<>(Arrays.asList("apple", "pen"))));
+        print(wordBreak("catsandog", new ArrayList<>(Arrays.asList("cats", "dog", "sand", "and", "cat"))));
+    }
+
+    public boolean wordBreak(String s, List<String> wordDict) {
+        Set<String> set = new HashSet<>(wordDict);
+        int n = s.length();
+        boolean[] dp = new boolean[n + 1];
+        dp[0] = true;
+        for (int i = 1; i <= n; i++) {
+            for (int j = i; j > 0; j--) {
+                if (set.contains(s.substring(j - 1, i)) && dp[j - 1]) {
+                    dp[i] = true;
+                }
+            }
+        }
+        return dp[n];
+    }
+
+    @Test
+    public void testP141() {
+
+    }
+
+    public boolean hasCycle(ListNode head) {
+        if (head == null) {
+            return false;
+        }
+        ListNode p1 = head;
+        ListNode p2 = head;
+        while (p2.next != null && p2.next.next != null) {
+            p1 = p1.next;
+            p2 = p2.next.next;
+            if (p1 == p2) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Test
+    public void testP142() {
+        // todo
+    }
+
+
+    @Test
+    public void testP143() {
+        ListNode head = new ListNode(1);
+        ListNode node2 = new ListNode(2);
+        ListNode node3 = new ListNode(3);
+        ListNode node4 = new ListNode(4);
+        ListNode node5 = new ListNode(5);
+        head.next = node2;
+        node2.next = node3;
+        node3.next = node4;
+        //node4.next = node5;
+        reorderList(head);
+        print(head);
+    }
+
+    public void reorderList(ListNode head) {
+        Stack<ListNode> stack = new Stack<>();
+        ListNode pHead = head;
+        int count = 0;
+        while (pHead != null) {
+            count++;
+            pHead = pHead.next;
+        }
+        pHead = head;
+        boolean isOdd = (count & 1) == 0;
+        int total = isOdd ? count / 2 : count / 2 + 1;
+        count = 1;
+        while (pHead != null) {
+            if (count > total) {
+                stack.add(pHead);
+            }
+            count++;
+            pHead = pHead.next;
+        }
+        pHead = head;
+        ListNode tail = pHead;
+
+        while (!stack.isEmpty()) {
+            pHead = pHead.next;
+            tail.next = stack.pop();
+            tail = tail.next;
+            tail.next = pHead;
+            tail = tail.next;
+        }
+        tail.next = null;
+    }
+
+    @Test
+    public void testP146() {
+        LRUCache lRUCache = new LRUCache(2);
+        print(lRUCache.get(2));
+        lRUCache.put(2, 6);
+        print(lRUCache.get(1));
+        lRUCache.put(1, 5);
+        lRUCache.put(1, 2);
+        print(lRUCache.get(1));
+        print(lRUCache.get(2));
+    }
+
+    @Test
+    public void testP147() {
+        ListNode node1 = new ListNode(4);
+        ListNode node2 = new ListNode(2);
+        ListNode node3 = new ListNode(3);
+        ListNode node4 = new ListNode(1);
+        node1.next = node2;
+        node2.next = node3;
+        node3.next = node4;
+        print(insertionSortList(node1));
+    }
+
+    public ListNode insertionSortList(ListNode head) {
+        ListNode newHead = head;
+        head = head.next;
+        newHead.next = null;
+        while (head != null) {
+            ListNode pre = null;
+            ListNode newHeadTemp = newHead;
+            while (newHeadTemp != null) {
+                if (head.val <= newHeadTemp.val) {
+                    ListNode node = head;
+                    head = head.next;
+                    if (pre == null) {
+                        node.next = newHead;
+                        newHead = node;
+                    } else {
+                        pre.next = node;
+                        node.next = newHeadTemp;
+                    }
+                    break;
+                }
+                pre = newHeadTemp;
+                newHeadTemp = newHeadTemp.next;
+            }
+            if (newHeadTemp == null) {
+                ListNode node = head;
+                head = head.next;
+                pre.next = node;
+
+                node.next = null;
+            }
+        }
+        return newHead;
+    }
+
+    @Test
+    public void testP148() {
+        ListNode node1 = new ListNode(4);
+        ListNode node2 = new ListNode(2);
+        ListNode node3 = new ListNode(3);
+        ListNode node4 = new ListNode(1);
+        node1.next = node2;
+        node2.next = node3;
+        node3.next = node4;
+        print(sortList(node1));
+    }
+
+    public ListNode sortList(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode slow = head;
+        ListNode fast = head;
+        while (fast.next != null && fast.next.next != null) {
+            fast = fast.next.next;
+            slow = slow.next;
+        }
+        ListNode newHead = slow.next;
+        slow.next = null;
+        ListNode l1 = sortList(head);
+        ListNode l2 = sortList(newHead);
+        return merge(l1, l2);
+    }
+
+    private ListNode merge(ListNode l1, ListNode l2) {
+        if (l1 == null) {
+            return l2;
+        }
+        if (l2 == null) {
+            return l1;
+        }
+        ListNode head = null;
+        ListNode tail = null;
+        if (l1.val <= l2.val) {
+            head = l1;
+            l1 = l1.next;
+            head.next = null;
+            tail = head;
+        } else {
+            head = l2;
+            l2 = l2.next;
+            head.next = null;
+            tail = head;
+        }
+
+        while (l1 != null && l2 != null) {
+            int v1 = l1.val;
+            int v2 = l2.val;
+            if (v1 <= v2) {
+                tail.next = l1;
+                tail = l1;
+                l1 = l1.next;
+                //tail.next = null;
+            } else {
+                tail.next = l2;
+                tail = l2;
+                l2 = l2.next;
+                //tail.next = null;
+            }
+        }
+        tail.next = l1 == null ? l2 : l1;
+
+        return head;
+    }
+
 }
