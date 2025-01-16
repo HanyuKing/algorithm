@@ -1,6 +1,6 @@
 package com.why.algo;
 
-import com.sun.jmx.snmp.SnmpNull;
+import com.why.algo.design.LRUCache;
 import org.junit.Test;
 
 import java.util.*;

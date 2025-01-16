@@ -1,9 +1,9 @@
-package com.why.algo;
+package com.why.algo.design;
 
 import java.util.HashMap;
 import java.util.Map;
 
-class LRUCache {
+public class LRUCache {
     private Map<Integer, Node> map = new HashMap<>();
     private Node head;
     private Node tail;
