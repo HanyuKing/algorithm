@@ -2,9 +2,8 @@ package com.why.algo;
 
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Author Hanyu.Wang
@@ -189,10 +188,110 @@ public class LC200 extends Base {
     @Test
     public void testP166() {
         print(fractionToDecimal(4, 333));
+        // todo
     }
 
     public String fractionToDecimal(int numerator, int denominator) {
 
         return "";
+    }
+
+    @Test
+    public void testP167() {
+        print(twoSum(new int[] {2,7,11,15}, 9));
+    }
+
+    public int[] twoSum(int[] numbers, int target) {
+        int l = 0;
+        int r = numbers.length - 1;
+        while (l < r) {
+            int sum = numbers[l] + numbers[r];
+            if (sum == target) {
+                return new int[] {l + 1, r + 1};
+            } else if (sum > target) {
+                r--;
+            } else {
+                l++;
+            }
+        }
+        return null;
+    }
+
+    @Test
+    public void testP168() {
+        print(convertToTitle(2147483647));
+    }
+
+    public String convertToTitle(int columnNumber) {
+        StringBuilder sb = new StringBuilder();
+        while (columnNumber > 0) {
+            int r = columnNumber % 26;
+            if (r == 0) {
+                r = 26;
+                columnNumber--;
+            }
+            sb.insert(0,  (char) ('A' + r - 1));
+            columnNumber /= 26;
+        }
+        return sb.toString();
+    }
+
+    @Test
+    public void testP171() {
+        print(titleToNumber("AB"));
+        print(titleToNumber("ZY"));
+    }
+
+    public int titleToNumber(String columnTitle) {
+        int ans = 0;
+        int n = 1;
+        for (int i = columnTitle.length() - 1; i >= 0; i--) {
+            ans += (columnTitle.charAt(i) - 'A' + 1) * n;
+            n *= 26;
+        }
+        return ans;
+    }
+
+    @Test
+    public void testP172() {
+        print(trailingZeroes(30));
+    }
+
+    public int trailingZeroes(int n) {
+        int count = 0;
+        while (n > 0) {
+            count += n / 5;
+            n /= 5;
+        }
+        return count;
+    }
+
+    @Test
+    public void testP173() {
+        // PASS
+    }
+
+    @Test
+    public void testP175() {
+        // SQL
+
+    }
+
+    @Test
+    public void testP179() {
+        print(largestNumber(new int[] {111311,1113})); // 1113 111311
+        print(largestNumber(new int[] {30,3,34,5,9})); // 1113 111113
+        /*
+
+         */
+    }
+
+    public String largestNumber(int[] nums) {
+        String s = Arrays.stream(nums)
+                .boxed()
+                .map(String::valueOf)
+                .sorted((o1, o2) -> (o2 + o1).compareTo(o1 + o2))
+                .collect(Collectors.joining(""));
+        return s.charAt(0) == '0' ? "0" : s;
     }
 }
