@@ -294,4 +294,25 @@ public class LC200 extends Base {
                 .collect(Collectors.joining(""));
         return s.charAt(0) == '0' ? "0" : s;
     }
+
+    @Test
+    public void testP187() {
+        String s = "AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT";
+        print(findRepeatedDnaSequences(s));
+    }
+
+    public List<String> findRepeatedDnaSequences(String s) {
+        Set<String> set = new HashSet<>();
+        int l = 10;
+        Set<String> ans = new HashSet<>();
+        for (int i = 0; i <= s.length() - l; i++) {
+            String subS = s.substring(i, i + l);
+            if (set.contains(subS)) {
+                ans.add(subS);
+            } else {
+                set.add(subS);
+            }
+        }
+        return new ArrayList<>(ans);
+    }
 }
