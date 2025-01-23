@@ -409,5 +409,68 @@ public class LC200 extends Base {
         return dp[nums.length];
     }
 
+    @Test
+    public void testP199() {
 
+    }
+
+    public List<Integer> rightSideView(TreeNode root) {
+        List<Integer> result = new ArrayList<>();
+        if (root == null) {
+            return result;
+        }
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        int levelCount = 1;
+        while (!queue.isEmpty()) {
+            int currCount = 0;
+            while (levelCount-- > 0) {
+                TreeNode node = queue.poll();
+                if (node.left != null) {
+                    queue.offer(node.left);
+                    currCount++;
+                }
+                if (node.right != null) {
+                    queue.offer(node.right);
+                    currCount++;
+                }
+                if (levelCount == 0) {
+                    result.add(node.val);
+                }
+             }
+            levelCount = currCount;
+        }
+        return result;
+    }
+
+    @Test
+    public void testP200() {
+
+    }
+
+    public int numIslands(char[][] grid) {
+        int m = grid.length;
+        int n = grid[0].length;
+        int count = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == '1') {
+                    numIslandsDFS(grid, i, j, m, n);
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    public void numIslandsDFS(char[][] grid, int i, int j, int m, int n) {
+        if (i < 0 || i >= m || j < 0 || j >= n || grid[i][j] != '1') {
+            return;
+        }
+        grid[i][j] = '2';
+        numIslandsDFS(grid, i - 1, j, m, n);
+        numIslandsDFS(grid, i + 1, j, m, n);
+        numIslandsDFS(grid, i, j - 1, m, n);
+        numIslandsDFS(grid, i, j + 1, m, n);
+    }
 }
