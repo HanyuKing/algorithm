@@ -3,6 +3,8 @@ package com.why.algo;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 /**
@@ -315,4 +317,97 @@ public class LC200 extends Base {
         }
         return new ArrayList<>(ans);
     }
+
+    @Test
+    public void testP189() {
+        rotate(new int[] {-1}, 2);
+    }
+
+    public void rotate(int[] nums, int k) {
+        // 1,2,3,4,5,6,7
+        // 5,6,7,1,2,3,4
+
+        // 4,3,2,1,7,6,5,
+        k = k % nums.length;
+        reverse(nums, 0, nums.length - k - 1);
+        reverse(nums, nums.length - k, nums.length - 1);
+        reverse(nums, 0, nums.length - 1);
+    }
+
+    private void reverse(int[] nums, int start, int end) {
+        while (start < end) {
+            int t = nums[start];
+            nums[start] = nums[end];
+            nums[end] = t;
+            start++;
+            end--;
+        }
+    }
+
+    @Test
+    public void testP190() {
+        print(reverseBits(43261596));
+        // print(reverseBits(4294967293));
+    }
+
+    public int reverseBits(int n) {
+        return Integer.reverse(n);
+    }
+
+    @Test
+    public void testP191() {
+        print(hammingWeight(2147483645));
+    }
+
+    public int hammingWeight(int n) {
+        int ans = 0;
+        while (n > 0) {
+            ans += n & 1;
+            n = n >> 1;
+        }
+        return ans;
+    }
+
+    @Test
+    public void testP193() {
+
+    }
+
+    @Test
+    public void testP197() {
+        // PASS
+        // SQL
+    }
+
+    @Test
+    public void testP198() {
+        print(rob(new int[] {2,1,1,2}));
+        print(rob(new int[] {1,2,3,1}));
+        print(rob(new int[] {2,7,9,3,1}));
+    }
+
+    public int rob(int[] nums) {
+        int prePre = 0;
+        int pre = nums[0];
+        int max = nums[0];
+        for (int i = 2; i <= nums.length; i++) {
+            max = prePre + nums[i - 1];
+            max = Math.max(max, pre);
+            prePre = pre;
+            pre = max;
+        }
+        return max;
+    }
+
+    public int rob2(int[] nums) {
+        int[] dp = new int[nums.length + 1];
+        dp[1] = nums[0];
+        for (int i = 2; i <= nums.length; i++) {
+            dp[i] = dp[i - 2] + nums[i - 1];
+            dp[i] = Math.max(dp[i], dp[i - 1]);
+        }
+        return dp[nums.length];
+    }
+
+
 }
